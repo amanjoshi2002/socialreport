@@ -4,33 +4,32 @@ import React, { useState, useCallback } from 'react';
 import Image from 'next/image';
 import { FaInstagram, FaTwitter, FaFacebook } from 'react-icons/fa';
 import axios from 'axios';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function Home() {
   const [selectedPlatform, setSelectedPlatform] = useState('');
   const [inputType, setInputType] = useState('');
   const [urlInput, setUrlInput] = useState('');
-  const [message, setMessage] = useState('');
 
   const handleIconClick = useCallback((platform) => {
     console.log('Icon clicked:', platform);
     setSelectedPlatform(platform);
     setInputType('');
-    setMessage('');
   }, []);
 
   const handleTypeClick = useCallback((type) => {
     console.log('Type clicked:', type);
     setInputType(type);
-    setMessage('');
   }, []);
 
   const handleSubmit = useCallback(async () => {
     if (!inputType) {
-      setMessage('Please select a user or page type.');
+      toast.error('Please select a user or page type.');
       return;
     }
     if (!urlInput) {
-      setMessage('Please enter a URL.');
+      toast.error('Please enter a URL.');
       return;
     }
     try {
@@ -39,11 +38,11 @@ export default function Home() {
         type: inputType,
         url: urlInput
       });
-      setMessage(`URL submitted successfully for ${selectedPlatform} ${inputType}: ${urlInput}`);
+      toast.success(`URL submitted successfully for ${selectedPlatform} ${inputType}: ${urlInput}`);
       setUrlInput('');
     } catch (error) {
       console.error('Error submitting URL:', error);
-      setMessage('Error submitting URL. Please try again.');
+      toast.error('Error submitting URL. Please try again.');
     }
   }, [selectedPlatform, inputType, urlInput]);
 
@@ -69,6 +68,7 @@ export default function Home() {
       margin: '20px auto',
       textAlign: 'center'
     }}>
+      <ToastContainer position="top-center" />
       <Image src="/img/logo.png" alt="Logo" width={100} height={100} style={{marginBottom: '20px'}} />
       <h1 style={{marginBottom: '20px'}}>Social Monitoring</h1>
       <div style={{display: 'flex', justifyContent: 'center', gap: '20px', marginBottom: '20px'}}>
@@ -125,7 +125,6 @@ export default function Home() {
           </button>
         </div>
       )}
-      {message && <p style={{marginTop: '20px', color: 'red'}}>{message}</p>}
     </div>
   );
 }
